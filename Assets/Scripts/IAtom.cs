@@ -9,13 +9,37 @@ public class IAtom : MonoBehaviour
     void Start()
     {
         atomID = Random.Range(0, 101);
-        if (atomID%2 == 0)
+        if (atomID%8 == 0)
         {
             gameObject.GetComponent<Renderer>().material.color = Color.red;
         }
-        else
+        else if (atomID%8 == 1)
+        {
+            gameObject.GetComponent<Renderer>().material.color = Color.green;
+        }
+        else if (atomID%8 == 2)
         {
             gameObject.GetComponent<Renderer>().material.color = Color.blue;
+        }
+        else if (atomID%8 == 3)
+        {
+            gameObject.GetComponent<Renderer>().material.color = Color.magenta;
+        }
+        else if (atomID%8 == 4)
+        {
+            gameObject.GetComponent<Renderer>().material.color = Color.yellow;
+        }
+        else if (atomID%8 == 5)
+        {
+            gameObject.GetComponent<Renderer>().material.color = Color.cyan;
+        }
+        else if (atomID%8 == 6)
+        {
+            gameObject.GetComponent<Renderer>().material.color = Color.black;
+        }
+        else if (atomID%8 == 7)
+        {
+            gameObject.GetComponent<Renderer>().material.color = Color.gray;
         }
 
         string ID = atomID.ToString();
