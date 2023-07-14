@@ -159,7 +159,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0.46226418, g: 0.23331259, b: 0.2866169, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -245,6 +245,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   atomObj: {fileID: 5524253481924085594, guid: 081137a3dc0954a52b9a04f3a973d4a0, type: 3}
+  lineObj: {fileID: 608857909897239471, guid: e475e94cd24524abdbe316af821f4ca4, type: 3}
   atomNum: 0
 --- !u!4 &2129969123
 Transform:

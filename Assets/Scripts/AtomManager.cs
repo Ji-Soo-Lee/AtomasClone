@@ -4,11 +4,13 @@ using UnityEngine;
 
 public class AtomManager : MonoBehaviour
 {
-    [SerializeField]
     public GameObject atomObj;
-    private Transform originPos;
+    public GameObject lineObj;    
     private float radius = 3.0f;
+    private Vector3 MousePosition;
     public int atomNum;
+    private List<GameObject> atomObjects = new List<GameObject>();
+    private GameObject line;
 
     // Start is called before the first frame update
     void Start()
@@ -17,17 +19,55 @@ public class AtomManager : MonoBehaviour
         atomNum = 6;
 
         for (int n = 0; n < atomNum; n++) {
-            float angle = n * Mathf.PI * 2 / atomNum;
-
             GameObject atom = Instantiate(atomObj);
-
-            atom.transform.position = transform.position + (new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0) * radius);
+            atomObjects.Add(atom);
         }
+
+        ArrangeAtoms();
+
+        line = Instantiate(lineObj);
+        line.transform.position = transform.position;
+        line.SetActive(false);
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
+        MousePosition = Input.mousePosition;
+        MousePosition = Camera.main.ScreenToWorldPoint(MousePosition);
+        //Debug.Log(MousePosition);
+
+        float mouseAngle = Mathf.Atan2(MousePosition.y, MousePosition.x);
+        //Debug.Log(mouseAngle);
+        if (mouseAngle < 0) {
+            mouseAngle = (2* Mathf.PI - Mathf.Abs(mouseAngle));
+        }
+        //Debug.Log(mouseAngle);
+        float angle = (2 * Mathf.PI / atomNum);
+
+        int mouseBetween = (int) (mouseAngle / angle);
+
+        if (Input.GetMouseButton(0)) {
+            line.SetActive(true);
+            line.transform.rotation = Quaternion.Euler(0, 0, (mouseBetween * angle + angle/2) * Mathf.Rad2Deg);
+        }
+
+        if (Input.GetMouseButtonUp(0)) {
+            line.SetActive(false);
+
+            GameObject newAtom = Instantiate(atomObj);
+            atomObjects.Insert(mouseBetween + 1, newAtom);
+            atomNum++;
+
+            ArrangeAtoms();
+        }
+    }
+
+    public void ArrangeAtoms() {
+        for (int n = 0; n < atomNum; n++) {
+            float angle = n * Mathf.PI * 2 / atomNum;
+            atomObjects[n].transform.position = transform.position + (new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0) * radius);
+        }
     }
 }
