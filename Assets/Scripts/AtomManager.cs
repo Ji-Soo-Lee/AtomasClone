@@ -5,12 +5,13 @@ using UnityEngine;
 public class AtomManager : MonoBehaviour
 {
     public GameObject atomObj;
-    public GameObject lineObj;    
+    public GameObject lineObj;  
     private float radius = 3.0f;
     private Vector3 MousePosition;
     public int atomNum;
     private List<GameObject> atomObjects = new List<GameObject>();
     private GameObject line;
+    private GameObject newAtom;
 
     // Start is called before the first frame update
     void Start()
@@ -28,12 +29,13 @@ public class AtomManager : MonoBehaviour
         line = Instantiate(lineObj);
         line.transform.position = transform.position;
         line.SetActive(false);
+
+        newAtom = Instantiate(atomObj);
     }
 
     // Update is called once per frame
     void Update()
     {
-
         MousePosition = Input.mousePosition;
         MousePosition = Camera.main.ScreenToWorldPoint(MousePosition);
         //Debug.Log(MousePosition);
@@ -47,6 +49,7 @@ public class AtomManager : MonoBehaviour
         float angle = (2 * Mathf.PI / atomNum);
 
         int mouseBetween = (int) (mouseAngle / angle);
+        Debug.Log(mouseBetween);
 
         if (Input.GetMouseButton(0)) {
             line.SetActive(true);
@@ -56,11 +59,12 @@ public class AtomManager : MonoBehaviour
         if (Input.GetMouseButtonUp(0)) {
             line.SetActive(false);
 
-            GameObject newAtom = Instantiate(atomObj);
             atomObjects.Insert(mouseBetween + 1, newAtom);
             atomNum++;
 
             ArrangeAtoms();
+
+            newAtom = Instantiate(atomObj);
         }
     }
 
