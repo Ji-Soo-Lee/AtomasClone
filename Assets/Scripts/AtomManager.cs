@@ -53,6 +53,7 @@ public class AtomManager : MonoBehaviour
 
         if (Input.GetMouseButton(0)) {
             line.SetActive(true);
+            line.transform.GetChild(0).GetComponent<Renderer>().material.color = newAtom.GetComponent<Renderer>().material.color;
             line.transform.rotation = Quaternion.Euler(0, 0, (mouseBetween * angle + angle/2) * Mathf.Rad2Deg);
         }
 
