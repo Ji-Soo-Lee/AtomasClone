@@ -31,6 +31,7 @@ public class AtomManager : MonoBehaviour
         line.SetActive(false);
 
         newAtom = Instantiate(atomObj);
+        newAtom.transform.position = transform.position;
     }
 
     // Update is called once per frame
@@ -49,7 +50,7 @@ public class AtomManager : MonoBehaviour
         float angle = (2 * Mathf.PI / atomNum);
 
         int mouseBetween = (int) (mouseAngle / angle);
-        Debug.Log(mouseBetween);
+        //Debug.Log(mouseBetween);
 
         if (Input.GetMouseButton(0)) {
             line.SetActive(true);
@@ -73,6 +74,7 @@ public class AtomManager : MonoBehaviour
         for (int n = 0; n < atomNum; n++) {
             float angle = n * Mathf.PI * 2 / atomNum;
             atomObjects[n].transform.position = transform.position + (new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0) * radius);
+            Debug.Log(atomObjects[n].GetComponent<IAtom>().GetAtomID());
         }
     }
 }

@@ -8,7 +8,18 @@ public class IAtom : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        atomID = Random.Range(0, 101);
+        
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+
+    void Awake() {
+        atomID = Random.Range(1, 101);
+        
         if (atomID%8 == 0)
         {
             gameObject.GetComponent<Renderer>().material.color = Color.red;
@@ -47,9 +58,8 @@ public class IAtom : MonoBehaviour
 
     }
 
-    // Update is called once per frame
-    void Update()
+    public int GetAtomID()
     {
-        
+        return atomID;
     }
 }
