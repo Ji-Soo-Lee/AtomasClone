@@ -64,7 +64,10 @@ public class AtomManager : MonoBehaviour
             atomObjects.Insert(mouseBetween + 1, newAtom);
             atomNum++;
 
-            ArrangeAtoms();
+            if (newAtom.GetComponent<IAtom>().GetAtomID() > 0)
+                ArrangeAtoms();
+            else if (newAtom.GetComponent<IAtom>().GetAtomID() == 0)
+                AddAtoms();
 
             newAtom = Instantiate(atomObj);
         }
@@ -74,7 +77,11 @@ public class AtomManager : MonoBehaviour
         for (int n = 0; n < atomNum; n++) {
             float angle = n * Mathf.PI * 2 / atomNum;
             atomObjects[n].transform.position = transform.position + (new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0) * radius);
-            Debug.Log(atomObjects[n].GetComponent<IAtom>().GetAtomID());
+            //Debug.Log(atomObjects[n].GetComponent<IAtom>().GetAtomID());
         }
+    }
+
+    public void AddAtoms() {
+        ArrangeAtoms();
     }
 }

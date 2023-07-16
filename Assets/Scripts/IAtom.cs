@@ -5,10 +5,12 @@ using UnityEngine;
 public class IAtom : MonoBehaviour
 {
     public int atomID;
+    public List<Color> atomColors = new List<Color>();
+
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
@@ -18,43 +20,25 @@ public class IAtom : MonoBehaviour
     }
 
     void Awake() {
-        atomID = Random.Range(1, 101);
+        // 0 as plus, -1 as minus
+        atomID = Random.Range(0, 11);
         
-        if (atomID%8 == 0)
-        {
-            gameObject.GetComponent<Renderer>().material.color = Color.red;
-        }
-        else if (atomID%8 == 1)
-        {
-            gameObject.GetComponent<Renderer>().material.color = Color.green;
-        }
-        else if (atomID%8 == 2)
-        {
-            gameObject.GetComponent<Renderer>().material.color = Color.blue;
-        }
-        else if (atomID%8 == 3)
-        {
-            gameObject.GetComponent<Renderer>().material.color = Color.magenta;
-        }
-        else if (atomID%8 == 4)
-        {
-            gameObject.GetComponent<Renderer>().material.color = Color.yellow;
-        }
-        else if (atomID%8 == 5)
-        {
-            gameObject.GetComponent<Renderer>().material.color = Color.cyan;
-        }
-        else if (atomID%8 == 6)
-        {
-            gameObject.GetComponent<Renderer>().material.color = Color.black;
-        }
-        else if (atomID%8 == 7)
-        {
-            gameObject.GetComponent<Renderer>().material.color = Color.gray;
+        if (atomID > 0) {
+            gameObject.GetComponent<Renderer>().material.color = atomColors[atomID%10];
+
+            string ID = atomID.ToString();
+            gameObject.GetComponentInChildren<TextMesh>().text = ID;
         }
 
-        string ID = atomID.ToString();
-        gameObject.GetComponentInChildren<TextMesh>().text = ID;
+        else if (atomID == 0) {
+            gameObject.GetComponent<Renderer>().material.color = atomColors[10];
+            gameObject.GetComponentInChildren<TextMesh>().text = "+";
+        }
+
+        else if (atomID == -1) {
+            gameObject.GetComponent<Renderer>().material.color = atomColors[11];
+            gameObject.GetComponentInChildren<TextMesh>().text = "-";
+        }
 
     }
 
