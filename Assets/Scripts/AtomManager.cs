@@ -12,6 +12,7 @@ public class AtomManager : MonoBehaviour
     private List<GameObject> atomObjects = new List<GameObject>();
     private GameObject line;
     private GameObject newAtom;
+    private int mouseBetween;
 
     // Start is called before the first frame update
     void Start()
@@ -21,6 +22,7 @@ public class AtomManager : MonoBehaviour
 
         for (int n = 0; n < atomNum; n++) {
             GameObject atom = Instantiate(atomObj);
+            atom.GetComponent<IAtom>().SetAtomID(Random.Range(0, 2));
             atomObjects.Add(atom);
         }
 
@@ -31,6 +33,7 @@ public class AtomManager : MonoBehaviour
         line.SetActive(false);
 
         newAtom = Instantiate(atomObj);
+        newAtom.GetComponent<IAtom>().SetAtomID(Random.Range(0, 2));
         newAtom.transform.position = transform.position;
     }
 
@@ -49,7 +52,7 @@ public class AtomManager : MonoBehaviour
         //Debug.Log(mouseAngle);
         float angle = (2 * Mathf.PI / atomNum);
 
-        int mouseBetween = (int) (mouseAngle / angle);
+        mouseBetween = (int) (mouseAngle / angle);
         //Debug.Log(mouseBetween);
 
         if (Input.GetMouseButton(0)) {
@@ -64,16 +67,25 @@ public class AtomManager : MonoBehaviour
             atomObjects.Insert(mouseBetween + 1, newAtom);
             atomNum++;
 
-            if (newAtom.GetComponent<IAtom>().GetAtomID() > 0)
-                ArrangeAtoms();
-            else if (newAtom.GetComponent<IAtom>().GetAtomID() == 0)
-                AddAtoms();
+            ArrangeAtoms();
 
             newAtom = Instantiate(atomObj);
+            newAtom.GetComponent<IAtom>().SetAtomID(Random.Range(0, 2));
         }
     }
 
     public void ArrangeAtoms() {
+
+        if (newAtom != null) {
+            if (newAtom.GetComponent<IAtom>().GetAtomID() == 0) {
+                InsertPlusAtom();
+            }
+        }
+
+        else {
+            Debug.Log(1);
+        }
+
         for (int n = 0; n < atomNum; n++) {
             float angle = n * Mathf.PI * 2 / atomNum;
             atomObjects[n].transform.position = transform.position + (new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0) * radius);
@@ -81,7 +93,21 @@ public class AtomManager : MonoBehaviour
         }
     }
 
-    public void AddAtoms() {
-        ArrangeAtoms();
+    public void InsertPlusAtom() {
+        int fromAtom = (mouseBetween + atomNum) % atomNum;
+        int backAtom = (mouseBetween + 2) % atomNum;
+
+        if (atomObjects[fromAtom].GetComponent<IAtom>().GetAtomID() == atomObjects[backAtom].GetComponent<IAtom>().GetAtomID()) {
+            GameObject fusionAtom = Instantiate(atomObj);
+            fusionAtom.GetComponent<IAtom>().SetAtomID(atomObjects[fromAtom].GetComponent<IAtom>().GetAtomID() + 1);
+            atomObjects.Insert(backAtom + 1, fusionAtom);
+            Destroy(atomObjects[backAtom]);
+            atomObjects.RemoveAt(backAtom);
+            Destroy(atomObjects[mouseBetween + 1]);
+            atomObjects.RemoveAt(mouseBetween + 1);
+            Destroy(atomObjects[fromAtom]);
+            atomObjects.RemoveAt(fromAtom);
+            atomNum -= 2;
+        }
     }
 }

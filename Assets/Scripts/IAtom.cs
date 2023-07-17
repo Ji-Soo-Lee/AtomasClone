@@ -19,10 +19,16 @@ public class IAtom : MonoBehaviour
         
     }
 
-    void Awake() {
+    public int GetAtomID()
+    {
+        return atomID;
+    }
+
+    public void SetAtomID(int _atomID)
+    {
+        atomID = _atomID;
         // 0 as plus, -1 as minus
-        atomID = Random.Range(0, 11);
-        
+
         if (atomID > 0) {
             gameObject.GetComponent<Renderer>().material.color = atomColors[atomID%10];
 
@@ -40,10 +46,13 @@ public class IAtom : MonoBehaviour
             gameObject.GetComponentInChildren<TextMesh>().text = "-";
         }
 
-    }
+        else if (atomID == -2) {
+            gameObject.GetComponent<Renderer>().material.color = atomColors[12];
+        }
 
-    public int GetAtomID()
-    {
-        return atomID;
+        else if (atomID == -3) {
+            gameObject.GetComponent<Renderer>().material.color = atomColors[13];
+            gameObject.GetComponentInChildren<TextMesh>().text = "+";
+        }
     }
 }
