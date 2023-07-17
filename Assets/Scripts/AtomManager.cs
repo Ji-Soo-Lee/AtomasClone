@@ -12,7 +12,7 @@ public class AtomManager : MonoBehaviour
     private List<GameObject> atomObjects = new List<GameObject>();
     private GameObject line;
     private GameObject newAtom;
-    private int mouseBetween;
+    private int plusIdx;
 
     // Start is called before the first frame update
     void Start()
@@ -52,7 +52,8 @@ public class AtomManager : MonoBehaviour
         //Debug.Log(mouseAngle);
         float angle = (2 * Mathf.PI / atomNum);
 
-        mouseBetween = (int) (mouseAngle / angle);
+        int mouseBetween = (int) (mouseAngle / angle);
+        plusIdx = mouseBetween + 1;
         //Debug.Log(mouseBetween);
 
         if (Input.GetMouseButton(0)) {
@@ -64,7 +65,7 @@ public class AtomManager : MonoBehaviour
         if (Input.GetMouseButtonUp(0)) {
             line.SetActive(false);
 
-            atomObjects.Insert(mouseBetween + 1, newAtom);
+            atomObjects.Insert(plusIdx, newAtom);
             atomNum++;
 
             ArrangeAtoms();
@@ -82,10 +83,6 @@ public class AtomManager : MonoBehaviour
             }
         }
 
-        else {
-            Debug.Log(1);
-        }
-
         for (int n = 0; n < atomNum; n++) {
             float angle = n * Mathf.PI * 2 / atomNum;
             atomObjects[n].transform.position = transform.position + (new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0) * radius);
@@ -94,20 +91,33 @@ public class AtomManager : MonoBehaviour
     }
 
     public void InsertPlusAtom() {
-        int fromAtom = (mouseBetween + atomNum) % atomNum;
-        int backAtom = (mouseBetween + 2) % atomNum;
+        int maxID = 0;
 
-        if (atomObjects[fromAtom].GetComponent<IAtom>().GetAtomID() == atomObjects[backAtom].GetComponent<IAtom>().GetAtomID()) {
+        int frontAtom = (plusIdx - 1 + atomNum) % atomNum;
+        int backAtom = (plusIdx + 1) % atomNum;
+
+        while (atomObjects[frontAtom].GetComponent<IAtom>().GetAtomID() == atomObjects[backAtom].GetComponent<IAtom>().GetAtomID() && atomObjects[frontAtom].GetComponent<IAtom>().GetAtomID() != 0) {
+            maxID = Mathf.Max(atomObjects[frontAtom].GetComponent<IAtom>().GetAtomID(), maxID);
+
             GameObject fusionAtom = Instantiate(atomObj);
-            fusionAtom.GetComponent<IAtom>().SetAtomID(atomObjects[fromAtom].GetComponent<IAtom>().GetAtomID() + 1);
+            fusionAtom.GetComponent<IAtom>().SetAtomID(maxID + 1);
+            maxID++;
             atomObjects.Insert(backAtom + 1, fusionAtom);
+
             Destroy(atomObjects[backAtom]);
             atomObjects.RemoveAt(backAtom);
-            Destroy(atomObjects[mouseBetween + 1]);
-            atomObjects.RemoveAt(mouseBetween + 1);
-            Destroy(atomObjects[fromAtom]);
-            atomObjects.RemoveAt(fromAtom);
+
+            Destroy(atomObjects[plusIdx]);
+            atomObjects.RemoveAt(plusIdx);
+
+            Destroy(atomObjects[frontAtom]);
+            atomObjects.RemoveAt(frontAtom);
+
             atomNum -= 2;
+
+            plusIdx = (backAtom - 2 + atomNum) % atomNum;
+            frontAtom = (plusIdx - 1 + atomNum) % atomNum;
+            backAtom = (plusIdx + 1) % atomNum;
         }
     }
 }
