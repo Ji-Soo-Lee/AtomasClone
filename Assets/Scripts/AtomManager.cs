@@ -13,6 +13,7 @@ public class AtomManager : MonoBehaviour
     private GameObject line;
     private GameObject newAtom;
     private int newIdx;
+    private bool isFromMinus = false;
 
     // Start is called before the first frame update
     void Start()
@@ -33,7 +34,7 @@ public class AtomManager : MonoBehaviour
         line.SetActive(false);
 
         newAtom = Instantiate(atomObj);
-        newAtom.GetComponent<IAtom>().SetAtomID(Random.Range(0, 2));
+        newAtom.GetComponent<IAtom>().SetAtomID(Random.Range(-1, 2));
         newAtom.transform.position = transform.position;
     }
 
@@ -58,21 +59,45 @@ public class AtomManager : MonoBehaviour
         if (Input.GetMouseButton(0)) {
             line.SetActive(true);
             line.transform.GetChild(0).GetComponent<Renderer>().material.color = newAtom.GetComponent<Renderer>().material.color;
-            line.transform.rotation = Quaternion.Euler(0, 0, (mouseBetween * angle + angle/2) * Mathf.Rad2Deg);
+            if (newAtom.GetComponent<IAtom>().GetAtomID() !=-1) {
+                line.transform.rotation = Quaternion.Euler(0, 0, (mouseBetween * angle + angle/2) * Mathf.Rad2Deg);
+            }
+
+            else if (newAtom.GetComponent<IAtom>().GetAtomID() == -1) {
+                line.transform.rotation = Quaternion.Euler(0, 0, (mouseBetween * angle) * Mathf.Rad2Deg);
+            }
         }
 
         if (Input.GetMouseButtonUp(0)) {
             line.SetActive(false);
 
-            newIdx = mouseBetween + 1;
-            atomObjects.Insert(newIdx, newAtom);
-            //Debug.Log(newIdx);
-            atomNum++;
+            if (newAtom.GetComponent<IAtom>().GetAtomID() != -1) {
+                newIdx = mouseBetween + 1;
+                atomObjects.Insert(newIdx, newAtom);
+                //Debug.Log(newIdx);
+                atomNum++;
 
-            ArrangeAtoms();
+                ArrangeAtoms();
 
-            newAtom = Instantiate(atomObj);
-            newAtom.GetComponent<IAtom>().SetAtomID(Random.Range(0, 2));
+                isFromMinus = false;
+                newAtom = Instantiate(atomObj);
+                newAtom.GetComponent<IAtom>().SetAtomID(Random.Range(-1, 2));
+            }
+
+            else if (newAtom.GetComponent<IAtom>().GetAtomID() == -1) {
+                Destroy(newAtom);
+
+                isFromMinus = true;
+                newAtom = Instantiate(atomObj);
+                newAtom.GetComponent<IAtom>().SetAtomID(atomObjects[mouseBetween].GetComponent<IAtom>().GetAtomID());
+
+                Destroy(atomObjects[mouseBetween]);
+                atomObjects.Remove(atomObjects[mouseBetween]);
+                atomNum--;
+
+                if (atomNum > 0)
+                    ArrangeAtoms();
+            }
         }
     }
 
