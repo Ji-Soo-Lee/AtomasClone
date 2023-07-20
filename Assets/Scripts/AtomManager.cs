@@ -7,7 +7,7 @@ public class AtomManager : MonoBehaviour
     public GameObject atomObj;
     public GameObject lineObj;  
     private float radius = 3.0f;
-    private Vector3 MousePosition;
+    private Vector3 mousePosition;
     public int atomNum;
     public List<GameObject> atomObjects = new List<GameObject>();
     private GameObject line;
@@ -36,19 +36,18 @@ public class AtomManager : MonoBehaviour
         line.SetActive(false);
 
         newAtom = Instantiate(atomObj);
-        //newAtom.GetComponent<IAtom>().SetAtomID(Random.Range(-1, 2));
-        newAtom.GetComponent<IAtom>().SetAtomID(0);
+        newAtom.GetComponent<IAtom>().SetAtomID(Random.Range(-1, 2));
         newAtom.transform.position = transform.position;
     }
 
     // Update is called once per frame
     void Update()
     {
-        MousePosition = Input.mousePosition;
-        MousePosition = Camera.main.ScreenToWorldPoint(MousePosition);
-        //Debug.Log(MousePosition);
+        mousePosition = Input.mousePosition;
+        mousePosition = Camera.main.ScreenToWorldPoint(mousePosition);
+        //Debug.Log(mousePosition);
 
-        float mouseAngle = Mathf.Atan2(MousePosition.y, MousePosition.x);
+        float mouseAngle = Mathf.Atan2(mousePosition.y, mousePosition.x);
         //Debug.Log(mouseAngle);
         if (mouseAngle < 0) {
             mouseAngle = (2* Mathf.PI - Mathf.Abs(mouseAngle));
@@ -83,6 +82,18 @@ public class AtomManager : MonoBehaviour
         if (Input.GetMouseButtonUp(0)) {
             line.SetActive(false);
 
+            if (isFromMinus) {
+                // Raycast함수를 통해 부딪치는 collider를 hit에 리턴받습니다.
+                RaycastHit2D hit = Physics2D.Raycast(mousePosition, Vector2.zero);
+                if (hit.collider != null) {
+                    Destroy(newAtom);
+                    newAtom = Instantiate(atomObj);
+                    newAtom.GetComponent<IAtom>().SetAtomID(0);
+                    return;
+                }
+                isFromMinus = false;
+            }
+
             if (newAtom.GetComponent<IAtom>().GetAtomID() != -1) {
                 if (atomNum != 0)
                     newIdx = mouseBetween + 1;
@@ -96,8 +107,7 @@ public class AtomManager : MonoBehaviour
 
                 isFromMinus = false;
                 newAtom = Instantiate(atomObj);
-                //newAtom.GetComponent<IAtom>().SetAtomID(Random.Range(-1, 2));
-                newAtom.GetComponent<IAtom>().SetAtomID(-1);
+                newAtom.GetComponent<IAtom>().SetAtomID(Random.Range(-1, 2));
             }
 
             else if (newAtom.GetComponent<IAtom>().GetAtomID() == -1) {
