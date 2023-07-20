@@ -9,7 +9,7 @@ public class AtomManager : MonoBehaviour
     private float radius = 3.0f;
     private Vector3 MousePosition;
     public int atomNum;
-    private List<GameObject> atomObjects = new List<GameObject>();
+    public List<GameObject> atomObjects = new List<GameObject>();
     private GameObject line;
     private GameObject newAtom;
     private int newIdx;
@@ -66,7 +66,7 @@ public class AtomManager : MonoBehaviour
 
             newIdx = mouseBetween + 1;
             atomObjects.Insert(newIdx, newAtom);
-            //Debug.Log(newIdx);
+            Debug.Log(newIdx);
             atomNum++;
 
             ArrangeAtoms();
@@ -112,6 +112,7 @@ public class AtomManager : MonoBehaviour
 
     public void FuseAtoms(int plusIdx) {
         int maxID = 0;
+        int chainNum = 0;
 
         if (atomNum <= 2) {
             return;
@@ -121,13 +122,14 @@ public class AtomManager : MonoBehaviour
         int backAtom = (plusIdx + 1) % atomNum;
 
         while (atomObjects[frontAtom].GetComponent<IAtom>().GetAtomID() == atomObjects[backAtom].GetComponent<IAtom>().GetAtomID() && atomObjects[frontAtom].GetComponent<IAtom>().GetAtomID() != 0) {
-            maxID = Mathf.Max(atomObjects[frontAtom].GetComponent<IAtom>().GetAtomID() + 1, maxID + 1);
+            maxID = Mathf.Max(atomObjects[frontAtom].GetComponent<IAtom>().GetAtomID(), maxID);
 
             List<int> idxList = new List<int>() {frontAtom, plusIdx, backAtom};
             idxList.Sort();
 
             GameObject fusionAtom = Instantiate(atomObj);
-            fusionAtom.GetComponent<IAtom>().SetAtomID(maxID);
+            chainNum++;
+            fusionAtom.GetComponent<IAtom>().SetAtomID(maxID + chainNum);
             atomObjects.Insert(idxList[2] + 1, fusionAtom);
             atomNum++;
             
