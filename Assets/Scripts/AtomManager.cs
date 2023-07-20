@@ -153,8 +153,10 @@ public class AtomManager : MonoBehaviour
                 break;
         }        
 
-        newIdx = plusIdx;
-        InsertNormalAtom();
+        if (chainNum > 0) {
+            newIdx = plusIdx;
+            InsertNormalAtom();
+        }
 
     }
 }
