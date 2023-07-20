@@ -66,7 +66,7 @@ public class AtomManager : MonoBehaviour
 
             newIdx = mouseBetween + 1;
             atomObjects.Insert(newIdx, newAtom);
-            Debug.Log(newIdx);
+            //Debug.Log(newIdx);
             atomNum++;
 
             ArrangeAtoms();
@@ -94,19 +94,24 @@ public class AtomManager : MonoBehaviour
     }
 
     public void InsertPlusAtom() {
-        FuseAtoms(newIdx);
+        if (atomNum > 2)
+            FuseAtoms(newIdx);
     }
 
     public void InsertNormalAtom() {
-        int frontAtom = (newIdx - 1 + atomNum) % atomNum;
-        int backAtom = (newIdx + 1) % atomNum;
+        int frontIdx = (newIdx - 1 + atomNum) % atomNum;
+        int backIdx = (newIdx + 1) % atomNum;
 
-        if (atomObjects[backAtom].GetComponent<IAtom>().GetAtomID() == 0 ) {
-            FuseAtoms(backAtom);
-        }
+        if (atomNum > 2) {
+            if (atomObjects[backIdx].GetComponent<IAtom>().GetAtomID() == 0 ) {
+                Debug.Log("back");
+                FuseAtoms(backIdx);
+            }
 
-        else if (atomObjects[frontAtom].GetComponent<IAtom>().GetAtomID() == 0) {
-            FuseAtoms(frontAtom);
+            if (atomObjects[frontIdx].GetComponent<IAtom>().GetAtomID() == 0) {
+                Debug.Log("front");
+                FuseAtoms(frontIdx);
+            }
         }
     }
 
@@ -114,17 +119,13 @@ public class AtomManager : MonoBehaviour
         int maxID = 0;
         int chainNum = 0;
 
-        if (atomNum <= 2) {
-            return;
-        }
+        int frontIdx = (plusIdx - 1 + atomNum) % atomNum;
+        int backIdx = (plusIdx + 1) % atomNum;
 
-        int frontAtom = (plusIdx - 1 + atomNum) % atomNum;
-        int backAtom = (plusIdx + 1) % atomNum;
+        while (atomObjects[frontIdx].GetComponent<IAtom>().GetAtomID() == atomObjects[backIdx].GetComponent<IAtom>().GetAtomID() && atomObjects[frontIdx].GetComponent<IAtom>().GetAtomID() != 0) {
+            maxID = Mathf.Max(atomObjects[frontIdx].GetComponent<IAtom>().GetAtomID(), maxID);
 
-        while (atomObjects[frontAtom].GetComponent<IAtom>().GetAtomID() == atomObjects[backAtom].GetComponent<IAtom>().GetAtomID() && atomObjects[frontAtom].GetComponent<IAtom>().GetAtomID() != 0) {
-            maxID = Mathf.Max(atomObjects[frontAtom].GetComponent<IAtom>().GetAtomID(), maxID);
-
-            List<int> idxList = new List<int>() {frontAtom, plusIdx, backAtom};
+            List<int> idxList = new List<int>() {frontIdx, plusIdx, backIdx};
             idxList.Sort();
 
             GameObject fusionAtom = Instantiate(atomObj);
@@ -144,13 +145,16 @@ public class AtomManager : MonoBehaviour
 
             atomNum -= 3;
 
-            plusIdx = (backAtom - 2 + atomNum) % atomNum;
-            frontAtom = (plusIdx - 1 + atomNum) % atomNum;
-            backAtom = (plusIdx + 1) % atomNum;
+            plusIdx = (backIdx - 2 + atomNum) % atomNum;
+            frontIdx = (plusIdx - 1 + atomNum) % atomNum;
+            backIdx = (plusIdx + 1) % atomNum;
 
-            if (atomNum <= 2) {
+            if (atomNum <= 2) 
                 break;
-            }
         }        
+
+        newIdx = plusIdx;
+        InsertNormalAtom();
+
     }
 }
