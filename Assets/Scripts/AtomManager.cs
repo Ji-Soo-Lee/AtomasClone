@@ -66,6 +66,13 @@ public class AtomManager : MonoBehaviour
 
         if (Input.GetMouseButton(0)) {
             line.SetActive(true);
+            if (isFromMinus) {
+                // Raycast함수를 통해 부딪치는 collider를 hit에 리턴받습니다.
+                RaycastHit2D hit = Physics2D.Raycast(mousePosition, Vector2.zero);
+                if (hit.collider != null) {
+                    line.SetActive(false);
+                }
+            }
             line.transform.GetChild(0).GetComponent<Renderer>().material.color = newAtom.GetComponent<Renderer>().material.color;
             if (newAtom.GetComponent<IAtom>().GetAtomID() !=-1) {
                 if (atomNum > 0)
