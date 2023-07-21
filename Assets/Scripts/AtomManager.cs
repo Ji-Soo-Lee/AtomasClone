@@ -36,7 +36,7 @@ public class AtomManager : MonoBehaviour
         line.SetActive(false);
 
         newAtom = Instantiate(atomObj);
-        newAtom.GetComponent<IAtom>().SetAtomID(Random.Range(-1, 2));
+        newAtom.GetComponent<IAtom>().SetAtomID(Random.Range(-2, 2));
         newAtom.transform.position = transform.position;
     }
 
@@ -74,16 +74,20 @@ public class AtomManager : MonoBehaviour
                 }
             }
             line.transform.GetChild(0).GetComponent<Renderer>().material.color = newAtom.GetComponent<Renderer>().material.color;
-            if (newAtom.GetComponent<IAtom>().GetAtomID() !=-1) {
+
+            if (newAtom.GetComponent<IAtom>().GetAtomID() == -1 || newAtom.GetComponent<IAtom>().GetAtomID() == -2) {
+                if (newAtom.GetComponent<IAtom>().GetAtomID() == -2)
+                    line.transform.GetChild(0).GetComponent<Renderer>().material.color = atomObjects[mouseBetween].GetComponent<Renderer>().material.color;
+                line.transform.rotation = Quaternion.Euler(0, 0, (mouseBetween * angle) * Mathf.Rad2Deg);
+            }
+
+            else {
                 if (atomNum > 0)
                     line.transform.rotation = Quaternion.Euler(0, 0, (mouseBetween * angle + angle/2) * Mathf.Rad2Deg);
                 else
                     line.transform.rotation = Quaternion.Euler(0, 0, 0);
             }
 
-            else if (newAtom.GetComponent<IAtom>().GetAtomID() == -1) {
-                line.transform.rotation = Quaternion.Euler(0, 0, (mouseBetween * angle) * Mathf.Rad2Deg);
-            }
         }
 
         if (Input.GetMouseButtonUp(0)) {
@@ -101,7 +105,26 @@ public class AtomManager : MonoBehaviour
                 isFromMinus = false;
             }
 
-            if (newAtom.GetComponent<IAtom>().GetAtomID() != -1) {
+            if (newAtom.GetComponent<IAtom>().GetAtomID() == -1 || newAtom.GetComponent<IAtom>().GetAtomID() == -2) {
+                int currAtom = newAtom.GetComponent<IAtom>().GetAtomID();
+                Destroy(newAtom);
+
+                newAtom = Instantiate(atomObj);
+                newAtom.GetComponent<IAtom>().SetAtomID(atomObjects[mouseBetween].GetComponent<IAtom>().GetAtomID());
+
+                if (currAtom == -1) {
+                    isFromMinus = true;
+
+                    Destroy(atomObjects[mouseBetween]);
+                    atomObjects.Remove(atomObjects[mouseBetween]);
+                    atomNum--;
+
+                    if (atomNum > 0)
+                        ArrangeAtoms();
+                }
+            }
+
+            else {
                 if (atomNum != 0)
                     newIdx = mouseBetween + 1;
                 else
@@ -114,22 +137,7 @@ public class AtomManager : MonoBehaviour
 
                 isFromMinus = false;
                 newAtom = Instantiate(atomObj);
-                newAtom.GetComponent<IAtom>().SetAtomID(Random.Range(-1, 2));
-            }
-
-            else if (newAtom.GetComponent<IAtom>().GetAtomID() == -1) {
-                Destroy(newAtom);
-
-                isFromMinus = true;
-                newAtom = Instantiate(atomObj);
-                newAtom.GetComponent<IAtom>().SetAtomID(atomObjects[mouseBetween].GetComponent<IAtom>().GetAtomID());
-
-                Destroy(atomObjects[mouseBetween]);
-                atomObjects.Remove(atomObjects[mouseBetween]);
-                atomNum--;
-
-                if (atomNum > 0)
-                    ArrangeAtoms();
+                newAtom.GetComponent<IAtom>().SetAtomID(Random.Range(-2, 2));
             }
         }
     }
@@ -162,12 +170,12 @@ public class AtomManager : MonoBehaviour
 
         if (atomNum > 2) {
             if (atomObjects[backIdx].GetComponent<IAtom>().GetAtomID() == 0 ) {
-                Debug.Log("back");
+                //Debug.Log("back");
                 FuseAtoms(backIdx);
             }
 
             if (atomObjects[frontIdx].GetComponent<IAtom>().GetAtomID() == 0) {
-                Debug.Log("front");
+                //Debug.Log("front");
                 FuseAtoms(frontIdx);
             }
         }
@@ -180,7 +188,7 @@ public class AtomManager : MonoBehaviour
         int frontIdx = (plusIdx - 1 + atomNum) % atomNum;
         int backIdx = (plusIdx + 1) % atomNum;
 
-        while (atomObjects[frontIdx].GetComponent<IAtom>().GetAtomID() == atomObjects[backIdx].GetComponent<IAtom>().GetAtomID() && atomObjects[frontIdx].GetComponent<IAtom>().GetAtomID() != 0) {
+        while (atomObjects[frontIdx].GetComponent<IAtom>().GetAtomID() == atomObjects[backIdx].GetComponent<IAtom>().GetAtomID() && atomObjects[frontIdx].GetComponent<IAtom>().GetAtomID() > 0) {
             maxID = Mathf.Max(atomObjects[frontIdx].GetComponent<IAtom>().GetAtomID(), maxID);
 
             List<int> idxList = new List<int>() {frontIdx, plusIdx, backIdx};
