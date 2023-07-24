@@ -215,10 +215,14 @@ public class AtomManager : MonoBehaviour
             frontIdx = (plusIdx - 1 + atomNum) % atomNum;
             backIdx = (plusIdx + 1) % atomNum;
 
+            Debug.Log(atomObjects[frontIdx].GetComponent<IAtom>().GetAtomID() == atomObjects[backIdx].GetComponent<IAtom>().GetAtomID());
+            Debug.Log(atomObjects[frontIdx].GetComponent<IAtom>().GetAtomID() > 0);
+            Debug.Log(atomObjects[backIdx].GetComponent<IAtom>().GetAtomID() > 0);
+
             if (atomNum <= 2) 
                 break;
         }        
-
+        
         if (chainNum > 0) {
             newIdx = plusIdx;
             InsertNormalAtom();
